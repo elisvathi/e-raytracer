@@ -4,6 +4,8 @@
 #include "Vect.hpp"
 #include "Color.hpp"
 #include "Object.hpp"
+#include "Material.hpp"
+#include "Utils.hpp"
 #include "math.h"
 
 class Sphere : public Object
@@ -15,21 +17,26 @@ class Sphere : public Object
 public:
   Sphere();
   Sphere(Vect, double, Color);
+  Sphere(Vect, double, Material*);
 
   // method function
   Vect getSphereCenter() { return center; }
   double getSphereRadius() { return radius; }
-  Color getSphereColor() { return color; }
-  Color getColorAt(Vect point) { return color;}
-
-  Color getColor()
-  {
-    return getSphereColor();
-  }
 
   Vect getNormalAt(Vect point)
   {
     return (point - center).normalize();
+  }
+
+  UV getUV(Vect point){
+    Vect rad = point - center;
+    double yangle = rad.angleBetween(Vect(0, 1, 0));
+    yangle = fmod(yangle, M_PI);
+    double xangle = rad.angleBetween(Vect(1, 0, 0));
+    xangle = fmod(xangle, 2 * M_PI);
+    yangle = mapValue(yangle, 0, M_PI, 0, 1);
+    xangle = mapValue(xangle, 0, 2 * M_PI, 0, 1);
+    return UV( xangle * 16, yangle * 16 );
   }
 
   double findIntersection(Ray ray)
@@ -80,8 +87,12 @@ public:
   }
 };
 
-Sphere::Sphere() : radius(1), center(Vect()), color(Color(0.5, 0.5, 0.5, 0)) {}
+Sphere::Sphere() : Object(Color(0.5, 0.5, 0.5, 0)), center(Vect()), radius(1) {}
 
 Sphere::Sphere(Vect c, double r, Color col)
-    : center(c), radius(r), color(col) {}
+    : Object(col), center(c), radius(r) {}
+
+Sphere::Sphere(Vect c, double r, Material *mat)
+    : Object(mat), center(c), radius(r) {}
+
 #endif

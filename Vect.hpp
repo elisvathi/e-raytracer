@@ -34,6 +34,14 @@ public:
     return x * other.x + y * other.y + z * other.z;
   }
 
+  double sumSquares(){
+    return x * x + y * y + z * z;
+  }
+
+  double angleBetween(Vect other){
+    return acos((*this%other)/sqrt(sumSquares() * other.sumSquares()));
+  }
+
   Vect operator^(Vect other){
     return Vect(y * other.z - z * other.y, z * other.x - x * other.z,
                 x * other.y - y * other.x);
@@ -45,6 +53,17 @@ public:
 
   Vect normalize() {
     return cloneDirection(1);
+  }
+
+  Vect reflect( Vect norm ){
+    return !((norm * ((norm % *this) * 2)) - *this);
+  }
+
+  Vect refract(Vect incoming,Vect normal, double ior){
+    double r = 1 / ior;
+    double c = (!normal)%incoming;
+    double e = sqrt(1- pow(r, 2)*(1-pow(c,2)));
+    return (incoming + (normal * e)) * r;
   }
 
 };

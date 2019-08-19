@@ -9,7 +9,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/main-debug.out",
+            "program": "${workspaceFolder}/raytracer-debug.out",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

@@ -1,9 +1,9 @@
 #ifndef _RAY_H
 #define _RAY_H
 #include "Vect.hpp"
-class Ray{
+class Ray {
   Vect origin, direction;
-  int bounces;
+  int bounces = 0;
 public:
   Ray();
   Ray(Vect, Vect);
@@ -14,8 +14,18 @@ public:
     return origin + (direction * length);
   }
 
-  Ray getReflectedRay(Vect origin, Vect ref ){
-    Ray r (origin, ref);
+  int getBounces(){return bounces;}
+
+  void setBounces(int b){bounces = b;}
+
+  Ray getReflectedRay(Vect orig, Vect ref ){
+    Ray r (orig, direction.reflect(ref));
+    r.bounces = bounces + 1;
+    return r;
+  }
+
+  Ray getRefractedRay(Vect orig, Vect ref, double ior){
+    Ray r (orig, direction.refract(direction, ref,  ior));
     r.bounces = bounces + 1;
     return r;
   }

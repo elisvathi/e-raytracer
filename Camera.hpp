@@ -1,6 +1,7 @@
 #ifndef _CAMERA_H
 #define _CAMERA_H
 #include "Vect.hpp"
+#include "Ray.hpp"
 
 class Camera{
   Vect campos, camdir, camright, camdown;
@@ -13,6 +14,32 @@ public:
   Vect getCameraDirection(){return camdir;}
   Vect getCameraRight(){return camright;}
   Vect getCameraDown(){return camdown;}
+  Ray getOriginRay(int width, int height, int x, int y){
+    return Ray(campos, getRayDirection(width, height, x, y));
+  }
+
+private:
+  Vect getRayDirection(int width, int height, int x, int y){
+    double xamnt, yamnt;
+    double aspectratio = (double)width / (double)height;
+    if (width > height) {
+      // the image is wider than it is tall
+      xamnt = ((x + 0.5) / (double)width) * aspectratio -
+        ((double)(width - height) / (double)height) / 2;
+      yamnt = ((height - y) + 0.5) / (double)height;
+    } else if (height > width) {
+      // the image is taller than it is wide
+      xamnt = (x + 0.5) / width;
+      yamnt = (((height - 2) + 0.5) / height) / aspectratio -
+        (((height - width) / (double)width) / 2);
+    } else {
+      // the image is square
+      xamnt = (x + 0.5) / width;
+      yamnt = ((height - y) + 0.5) / height;
+    }
+    return (camdir + ((camright * (xamnt - 0.5)) + (camdown * (yamnt - 0.5))))
+        .normalize();
+  }
 };
 
 Camera::Camera()

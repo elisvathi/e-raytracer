@@ -1,6 +1,4 @@
-#ifndef _SPHERE_H
-#define _SPHERE_H
-
+#pragma once
 #include "Vect.hpp"
 #include "Color.hpp"
 #include "Object.hpp"
@@ -95,4 +93,3 @@ Sphere::Sphere(Vect c, double r, Color col)
 Sphere::Sphere(Vect c, double r, Material *mat)
     : Object(mat), center(c), radius(r) {}
 
-#endif

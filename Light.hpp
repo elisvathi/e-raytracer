@@ -1,6 +1,4 @@
-#ifndef _LIGHT_H
-#define _LIGHT_H
-
+#pragma once
 #include "Vect.hpp"
 #include "Color.hpp"
 
@@ -20,12 +18,6 @@ public:
   void setLightIntensity(double value) { intensity = value; }
 };
 
-Light::Light() : position(Vect(0, 0, 0)), color(Color(1, 1, 1, 0)) {
-  intensity = 1;
-}
+Light::Light() : position(Vect(0, 0, 0)), color(Color(1, 1, 1, 0)), intensity(1) {}
 
-Light::Light(Vect p, Color c) : position(p), color(c) {
-  intensity = 1;
-}
-
-#endif
+Light::Light(Vect p, Color c) : position(p), color(c), intensity(1) {}

@@ -1,6 +1,4 @@
-#ifndef _RAYTRACER_H
-#define _RAYTRACER_H
-
+#pragma once
 #include "Scene.hpp"
 #include "Vect.hpp"
 #include "Object.hpp"
@@ -42,7 +40,7 @@ class HitData {
 };
 
 class Raytracer{
-  int bounces = 150;
+  int bounces = 5;
   Scene* scene = nullptr;
   public:
   Raytracer(Scene* sc): scene(sc){}
@@ -52,19 +50,24 @@ class Raytracer{
     if (data.index >= 0) {
       Object *object = scene->objects[data.index];
       Vect intersectionPoint = ray.getPointAtLength(data.distance);
-      Color color = object->getColorAt(intersectionPoint);
-      double lightIntensity = getTotalSceneIntensity(object, intersectionPoint);
-      Color result = color.multiply(lightIntensity);
+      Color result = getIlluminationColor(object, intersectionPoint);
       if (ray.getBounces() >= bounces) {
         return result;
       }
-      Color reflectedColor = getReflectedColor(object, intersectionPoint, ray);
+      // Color reflectedColor = getReflectedColor(object, intersectionPoint, ray);
       // Color refractedColor = getRefractedColor(object, intersectionPoint, ray);
-      return result.add(reflectedColor);
+      // return result.add(reflectedColor);
+      return result;
     }
     return Color(0, 0, 0, 0);
   }
 private:
+
+  Color getIlluminationColor(Object *object, Vect point){
+    Color color = object->getColorAt(point);
+    double lightIntensity = getTotalSceneIntensity(object, point);
+    return color.multiply(lightIntensity);
+  }
 
   Color getReflectedColor(Object *object, Vect point, Ray ray) {
     if (object->get_material()->get_reflectionCoeficient() == 0) {
@@ -99,7 +102,7 @@ private:
   double getMaximumIntensity() {
     double value = 0;
     for (unsigned long i = 0; i < scene->lights.size(); i++) {
-      value += scene->lights[i]->getLightIntensity();
+      value += scene->lights[i]->getTotalIntensity();
     }
     return value;
   }
@@ -116,27 +119,29 @@ private:
     return getTotalIntensity(object, hitPoint) / getMaximumIntensity();
   }
 
-  double intensity(Object *object, Light *light, Vect hitPoint) {
-    Vect lightRay = light->getLightPosition() - hitPoint;
-    double mag = lightRay.magnitude();
-    Vect objNormal = object->getNormalAt(hitPoint);
-    Ray newRay(hitPoint, lightRay);
-    for (unsigned long i = 0; i < scene->objects.size(); i++) {
-      double hit = scene->objects[i]->findIntersection(newRay);
-      if (hit > 0 && hit < mag) {
+  double intensity(Object *object, CompoundLight *light, Vect hitPoint) {
+    int lightCount = light->getLightsCount();
+    double value = 0.0;
+    for(int i = 0; i< lightCount; i++){
+      Vect shadowVect = light->getVector(i, hitPoint);
+      Ray newRay(hitPoint, shadowVect);
+      double mag = shadowVect.magnitude();
+      Vect objNormal = object->getNormalAt(hitPoint);
+      for (unsigned long i = 0; i < scene->objects.size(); i++) {
+        double hit = scene->objects[i]->findIntersection(newRay);
+        if (hit > 0 && hit < mag) {
+          return 0;
+        }
+      }
+      double angle = objNormal.angleBetween(shadowVect);
+      angle = abs(angle);
+      if (angle > M_PI / 2) {
         return 0;
       }
+      double intens = mapValue(angle, 0, M_PI / 2, light->getIntensity(i, hitPoint), 0);
+      value += intens;
     }
-    double angle = objNormal.angleBetween(lightRay);
-    angle = abs(angle);
-    if (angle > M_PI / 2) {
-      return 0;
-    }
-    double intens = mapValue(angle, 0, M_PI / 2, light->getLightIntensity(), 0);
-    return intens;
+    return value;
   }
 
 };
-
-
-#endif

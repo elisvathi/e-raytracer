@@ -1,5 +1,4 @@
-#ifndef _CAMERA_H
-#define _CAMERA_H
+#pragma once
 #include "Vect.hpp"
 #include "Ray.hpp"
 
@@ -55,5 +54,3 @@ Camera::Camera(Vect p, Vect lookat) {
   camright = (Vect(0, 1, 0) ^ camdir).normalize();
   camdown = camright ^ camdir;
 }
-
-#endif

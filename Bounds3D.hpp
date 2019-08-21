@@ -1,5 +1,4 @@
-#ifndef _BOUNDS3D_H
-#define _BOUNDS3D_H
+#pragma once
 #include "Vect.hpp"
 #include "Ray.hpp"
 class Bounds3D {
@@ -25,4 +24,3 @@ public:
   }
 
 };
-#endif

@@ -8,7 +8,7 @@ raytracer: $(OBJ)
 	./raytracer.out
 
 debug:
-	g++ -g $(LIB) -o raytracer-debug.out main.cpp
+	g++ -g -o raytracer-debug.out main.cpp $(LIB)
 
 main.o:
 	g++ -c main.cpp $(INC)

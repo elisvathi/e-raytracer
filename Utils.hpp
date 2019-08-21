@@ -1,6 +1,4 @@
-#ifndef _UTILS_H
-#define _UTILS_H
-
+#pragma once
 #include <fstream>
 
 struct RGBType {
@@ -8,6 +6,10 @@ struct RGBType {
   double g;
   double b;
 };
+
+double min(double a, double b){
+  return !(b<a)?a:b;
+}
 
 double mapValue(double val, double a1, double b1, double a2, double b2) {
   double rap = (val - a1) / (b1 - a1);
@@ -76,5 +78,3 @@ void saveBmp(const char *filename, int width, int height, int dpi, RGBType *data
   }
   fclose(f);
 };
-
-#endif

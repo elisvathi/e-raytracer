@@ -1,5 +1,4 @@
-#ifndef _TEXTURE_H
-#define _TEXTURE_H
+#pragma once
 #include "Color.hpp"
 #include <vector>
 #include <cmath>
@@ -47,4 +46,3 @@ class Checkerboard: public Texture{
     return Color(1.0, 1.0, 1.0, 0.0);
   }
 };
-#endif

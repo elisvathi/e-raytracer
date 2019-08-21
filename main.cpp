@@ -9,25 +9,25 @@
 #include "Camera.hpp"
 #include "Color.hpp"
 #include "Light.hpp"
+#include "Map.hpp"
 #include "Object.hpp"
 #include "Plane.hpp"
 #include "Ray.hpp"
+#include "Raytracer.hpp"
 #include "Scene.hpp"
 #include "Sphere.hpp"
-#include "Raytracer.hpp"
-#include "Map.hpp"
 #include "Texture.hpp"
+#include "CompoundLight.hpp"
+#include "Utils.hpp"
 #include "Vect.hpp"
+#include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "Utils.hpp"
-#include <SDL2/SDL.h>
 
 using namespace std;
 
-
-Raytracer get_scene(){
+Raytracer get_scene() {
   Vect O(0, 0, 0);
   Vect X(1, 0, 0);
   Vect Y(0, 1, 0);
@@ -46,7 +46,7 @@ Raytracer get_scene(){
   Vect secondLightPos(-10, 10, -10);
   Light *scene_light2 = new Light(secondLightPos, white_light);
 
-  Vect second_sphere_center(0, 0.0, 0);
+  Vect second_sphere_center(0, 1.0, 0);
   Vect first_sphere_center(0, -1.0, 0);
   Sphere *second_sphere = new Sphere(second_sphere_center, 0.5, blue_col);
   Sphere *scene_sphere = new Sphere(first_sphere_center, 1, pretty_green);
@@ -58,25 +58,26 @@ Raytracer get_scene(){
   scene_plane->get_material()->set_reflectionCoeficient(1.0);
   scene_sphere->get_material()->set_refractionIOR(1.2);
   scene_sphere->get_material()->set_refractionCoeficient(1.0);
-  Scene *scene  = new Scene();
+  Scene *scene = new Scene();
   scene->addObject(scene_plane);
   scene->addObject(scene_sphere);
   scene->addObject(second_sphere);
-  scene->addLight(scene_light);
-  scene->addLight(scene_light2);
+  // scene->addLight(new PlaneLight());
+  scene->addLight(new PointLight(scene_light));
+  scene->addLight(new PointLight(scene_light2));
   // scene->addLight(&scene_light3);
-  Raytracer raytracer (scene);
+  Raytracer raytracer(scene);
   return raytracer;
 }
 
-Camera getCamera(int width, int height){
+Camera getCamera(int width, int height) {
   Vect lookAt(0, 0, 0);
   Vect campos(0, 0, -5);
   Camera camera(campos, lookAt);
   return camera;
 }
 
-void test_render(int width, int height){
+void test_render(int width, int height) {
   cout << "rendering ..." << endl;
   Camera camera = getCamera(width, height);
   Raytracer raytracer = get_scene();
@@ -99,62 +100,40 @@ void test_render(int width, int height){
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 bool running = true;
-SDL_Window* gWindow = NULL;
-SDL_Renderer* renderer;
-SDL_Surface* gScreenSurface = NULL;
-SDL_Surface* gBuffer = NULL;
+SDL_Window *window = NULL;
+SDL_Renderer *renderer;
 
-bool init(){
+bool init() {
   bool success = true;
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
-    {
-      printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
-      success = false;
-    }
-  else
-    {
-      gWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
-      if( gWindow == NULL )
-        {
-          printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
-          success = false;
-        }
-      else
-        {
-          gScreenSurface = SDL_GetWindowSurface( gWindow );
-        }
-    }
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    success = false;
+  } else {
+    SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, 0, &window,
+                                &renderer);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_RenderClear(renderer);
+  }
   return success;
 }
-void close()
-{
-  SDL_FreeSurface( gBuffer );
+void close() {
   SDL_DestroyRenderer(renderer);
   renderer = nullptr;
-  SDL_DestroyWindow( gWindow );
-  gWindow = nullptr;
+  SDL_DestroyWindow(window);
+  window = nullptr;
   SDL_Quit();
 }
 
-void mainLoop(){
+void mainLoop() {
   SDL_Event event;
-  while(running){
+  while (running) {
     if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
       break;
   }
 }
 
 int main(int argc, char **argv) {
-  if( !init() )
-    {
-      printf( "Failed to initialize!\n" );
-    }
-  else
-    {
-      test_render(SCREEN_WIDTH, SCREEN_HEIGHT);
-      mainLoop();
-    }
-  close();
+  test_render(SCREEN_WIDTH, SCREEN_HEIGHT);
   return 0;
 }

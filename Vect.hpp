@@ -1,5 +1,4 @@
-#ifndef _VECT_H
-#define _VECT_H
+#pragma once
 #include "math.h"
 class Vect{
   double x, y, z;
@@ -72,5 +71,3 @@ public:
 Vect::Vect(){}
 
 Vect::Vect(double i, double j, double k): x(i), y(j), z(k) {}
-
-#endif

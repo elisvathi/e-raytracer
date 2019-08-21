@@ -1,5 +1,4 @@
-#ifndef _OBJECT_H
-#define _OBJECT_H
+#pragma once
 
 #include "Ray.hpp"
 #include "Color.hpp"
@@ -42,5 +41,3 @@ public:
 Object::Object() : material(new Material()){}
 Object::Object(Color c) : material(new Material(c)){}
 Object::Object(Material *m): material(m){}
-
-#endif

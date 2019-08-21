@@ -1,6 +1,4 @@
-#ifndef _PLANE_H
-#define _PLANE_H
-
+#pragma once
 #include "Color.hpp"
 #include "Material.hpp"
 #include "Object.hpp"
@@ -51,5 +49,3 @@ Plane::Plane(Vect n, double d, Color c) : Object(c), normal(n), distance(d) {}
 
 Plane::Plane(Vect n, double d, Material *mat)
     : Object(mat), normal(n), distance(d) {}
-
-#endif

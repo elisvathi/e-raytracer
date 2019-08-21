@@ -1,5 +1,4 @@
-#ifndef _MAP_H
-#define _MAP_H
+#pragma once
 #include "Color.hpp"
 #include "Texture.hpp"
 class Map {
@@ -35,4 +34,3 @@ private:
     return texture !=nullptr && activeTexture;
   }
 };
-#endif

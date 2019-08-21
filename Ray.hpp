@@ -1,5 +1,4 @@
-#ifndef _RAY_H
-#define _RAY_H
+#pragma once
 #include "Vect.hpp"
 class Ray {
   Vect origin, direction;
@@ -42,4 +41,3 @@ Ray::Ray(Vect o, Vect d) {
   origin = o;
   direction = d.normalize();
 }
-#endif

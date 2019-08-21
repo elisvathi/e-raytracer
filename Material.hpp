@@ -1,6 +1,4 @@
-#ifndef _MATERIAL_H
-#define _MATERIAL_H
-
+#pragma once
 #include "Color.hpp"
 #include "Map.hpp"
 
@@ -77,4 +75,3 @@ Material::Material(){
   color = Color(0,0,0,0);
 }
 Material::Material(Color c) : color(c) {}
-#endif

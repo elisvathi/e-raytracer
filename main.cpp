@@ -125,14 +125,6 @@ void close() {
   SDL_Quit();
 }
 
-void mainLoop() {
-  SDL_Event event;
-  while (running) {
-    if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
-      break;
-  }
-}
-
 int main(int argc, char **argv) {
   test_render(SCREEN_WIDTH, SCREEN_HEIGHT);
   return 0;

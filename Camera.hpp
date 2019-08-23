@@ -4,9 +4,11 @@
 #include "math.h"
 #include "Utils.hpp"
 
+
 class Camera{
   Vect campos, camdir, camright, camdown;
   double angle = degreesToRadians(75.0);
+  double aperture = 0.01;
 public:
   Camera();
   Camera(Vect, Vect, Vect, Vect);
@@ -21,7 +23,9 @@ public:
   }
 
   Ray getOriginRay(double aspectRatio, double x, double y){
-    return Ray(campos, getOriginDirection(aspectRatio, x, y));
+    Vect dir = getOriginDirection(aspectRatio, x, y);
+    dir = dir +  (randomInDisk() * aperture);
+    return Ray(campos, dir);
   }
 
 private:

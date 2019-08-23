@@ -4,8 +4,6 @@
 
 class HitableList : public Hitable {
 public:
-  HitableList():Hitable(){
-  }
   bool hit(Ray &r, double t_min, double t_max, HitRecord &rec) {
     HitRecord tempRecord;
     bool hited = false;
@@ -21,5 +19,5 @@ public:
     return hited;
   }
 protected:
-  virtual const vector<Hitable *> getHitables() {return vector<Hitable*>();}
+  virtual const vector<Hitable *> getHitables() = 0;
 };

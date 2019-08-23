@@ -39,12 +39,6 @@ public:
     return r;
   }
 
-  Ray getRefractedRay(Vect orig, Vect ref, double ior){
-    Ray r (orig, direction.refract(direction, ref,  ior));
-    r.bounces = bounces + 1;
-    return r;
-  }
-
 };
 
 

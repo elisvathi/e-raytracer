@@ -60,6 +60,10 @@ public:
     return x * other.x + y * other.y + z * other.z;
   }
 
+  Vect operator*(Vect other){
+    return Vect(x * other.x , y * other.y , z * other.z);
+  }
+
   double sumSquares(){
     return x * x + y * y + z * z;
   }
@@ -85,11 +89,15 @@ public:
     return !((norm * ((norm % *this) * 2)) - *this);
   }
 
-  Vect refract(Vect incoming,Vect normal, double ior){
-    double r = 1 / ior;
-    double c = (!normal)%incoming;
-    double e = sqrt(1- pow(r, 2)*(1-pow(c,2)));
-    return (incoming + (normal * e)) * r;
+  bool refract(Vect normal, double ni_over_nt, Vect& refracted){
+    Vect uv = normalize();
+    double dt = uv % normal;
+    double discriminant = 1.0 - ni_over_nt * ni_over_nt * (1 - dt * dt);
+    if(discriminant> 0){
+      refracted = ((uv - normal * dt) * ni_over_nt) - normal * sqrt(discriminant);
+      return true;
+    }
+    return false;
   }
 
 };
@@ -116,5 +124,13 @@ Vect randomUnit(){
   return Vect(0, 1, 0)
     .rotateX(M_PI * 2 * drand48())
     .rotateY(M_PI * 2 * drand48())
-    .rotateZ(M_PI * 2 * drand48());
+    .rotateZ(M_PI * 2 * drand48()).normalize();
+}
+
+Vect randomInDisk(){
+  Vect p;
+  do{
+    p = Vect(drand48(), drand48(), 0) * 2 - Vect(1,1,0);
+  }while( p % p > 1.0);
+  return p;
 }

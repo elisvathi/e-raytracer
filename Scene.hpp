@@ -17,6 +17,11 @@ public:
   vector<Hitable *> objects;
   void addObject(Object *object) { objects.push_back(object); }
   void addLight(CompoundLight *light) { lights.push_back(light); }
+  void addObjects(Hitable **objs, int count){
+    for(int i = 0; i < count; i++){
+      objects.push_back(objs[i]);
+    }
+  }
 protected:
   const vector<Hitable*> getHitables(){
     return objects;

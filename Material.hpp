@@ -1,91 +1,80 @@
 #pragma once
-#include "Map.hpp"
 #include "Ray.hpp"
+#include "Hitable.hpp"
+#include "Vect.hpp"
 
 class Material {
-  Vect color;
-  double reflectionCoeficient = 1.0;
-  double ref_glossiness = 1.0;
-  double refractionCoeficient = 0;
-  double refractionIOR = 1;
-  Map* diffuse = nullptr;
-  Map* roughness = nullptr;
-  Map* bump = nullptr;
-  Map* tranlucency = nullptr;
-  Map* specular = nullptr;
-  Map* displace = nullptr;
-  Map* reflection = nullptr;
-  Map* fresnelIOR = nullptr;
-  Map* reflectionGlossiness = nullptr;
-  Map* refraction = nullptr;
-  Map* refractionGlossiness = nullptr;
-  Map* opacity = nullptr;
-
 public:
-  int glossinessSubdivisions = 3;
-  Material();
-  Material(Vect);
+  virtual bool scatter(Ray& r_in, HitRecord& rec, Vect& attentuation, Ray& scattered) = 0;
+};
 
-  Vect get_color() {
-      return color;
+
+class Lambertian : public Material{
+public:
+  Vect albedo;
+  Lambertian(Vect a):albedo(a){}
+  bool scatter(Ray& r_in, HitRecord& rec, Vect& attentuation, Ray& scattered) {
+      Vect target = rec.p + rec.normal + randomUnit();
+      scattered  = Ray(rec.p, target-rec.p);
+      attentuation = albedo;
+      return true;
   }
+};
 
-  virtual bool scatter(){
-  }
-
-  Vect get_color(double u, double v) {
-    if (diffuse == nullptr) {
-      return color;
+class Metal: public Material{
+public:
+  Vect albedo;
+  double fuzz;
+  Metal(Vect a, double f = 0.0):albedo(a){
+    if(f < 1){
+      fuzz = f;
+    }else{
+      fuzz =1;
     }
-    return diffuse->getColor(u, v);
-  };
-
-  Map* getDiffuse(){
-    return diffuse;
   }
 
-  void setDiffuse(Map *map){
-    diffuse = map;
-  }
-
-  void set_color(Vect color) {
-    this->color = color;
-  }
-
-  double get_refractionCoeficient() {
-    return refractionCoeficient;
-  }
-
-  void set_refractionCoeficient(double refractionCoeficient) {
-    this->refractionCoeficient = refractionCoeficient;
-  }
-
-  double get_refractionIOR() {
-    return refractionIOR;
-  }
-
-  void set_refractionIOR(double refractionIOR) {
-    this->refractionIOR = refractionIOR;
-  }
-
-  double get_reflectionCoeficient() {
-    return reflectionCoeficient;
-  }
-
-  void set_reflectionCoeficient(double reflectionCoeficient) {
-    this->reflectionCoeficient = reflectionCoeficient;
-  }
-
-  double getRefGlossiness(){
-    return ref_glossiness;
-  }
-
-  void setRefGlossiness(double value){
-    ref_glossiness = value;
+  bool scatter(Ray& r_in, HitRecord& rec, Vect& attentuation, Ray& scattered) {
+    Vect reflected = r_in.getRayDirection().reflect(rec.normal);
+    scattered = Ray(rec.p, reflected + randomUnit() * fuzz);
+    attentuation = albedo;
+    return scattered.getRayDirection() % rec.normal > 0;
   }
 
 };
-Material::Material(){
-  color = Vect(0,0,0);
-}
-Material::Material(Vect c) : color(c) {}
+
+class Dielectric: public Material{
+public:
+  double ref_idx;
+  Dielectric(double ri):ref_idx(ri){}
+  bool scatter(Ray& r_in, HitRecord& rec, Vect& attentuation, Ray& scattered) {
+    Vect outward_normal;
+    Vect reflected = r_in.getRayDirection().reflect(rec.normal);
+    double ni_over_nt;
+    attentuation = Vect(1.0, 1.0, 1.0);
+    Vect refracted;
+    double reflect_prob;
+    double cosine;
+    // check if is going in or out
+    if(r_in.getRayDirection() % rec.normal > 0){
+      outward_normal = !(rec.normal);
+      ni_over_nt = ref_idx;
+      cosine = (r_in.getRayDirection() % rec.normal) / r_in.getRayDirection().magnitude();
+    }else{
+      outward_normal = rec.normal;
+      ni_over_nt = 1.0 / ref_idx;
+      cosine = (-1 * (r_in.getRayDirection() % rec.normal)) / r_in.getRayDirection().magnitude();
+    }
+    if(r_in.getRayDirection().refract(outward_normal, ni_over_nt, refracted)){
+      reflect_prob = schlick(cosine, ref_idx);
+    }else{
+      reflect_prob = 1.0;
+    }
+    if(drand48() < reflect_prob){
+      scattered = Ray(rec.p, reflected);
+    }else{
+      scattered = Ray(rec.p, refracted);
+    }
+    return true;
+  }
+
+};

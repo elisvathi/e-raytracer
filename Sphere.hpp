@@ -1,6 +1,5 @@
 #pragma once
 #include "Vect.hpp"
-#include "Color.hpp"
 #include "Object.hpp"
 #include "Material.hpp"
 #include "Utils.hpp"
@@ -10,11 +9,10 @@ class Sphere : public Object
 {
   Vect center;
   double radius;
-  Color color;
 
 public:
   Sphere();
-  Sphere(Vect, double, Color);
+  Sphere(Vect, double, Vect);
   Sphere(Vect, double, Material*);
 
   // method function
@@ -85,9 +83,9 @@ public:
   }
 };
 
-Sphere::Sphere() : Object(Color(0.5, 0.5, 0.5, 0)), center(Vect()), radius(1) {}
+Sphere::Sphere() : Object(Vect(0.5, 0.5, 0.5)), center(Vect()), radius(1) {}
 
-Sphere::Sphere(Vect c, double r, Color col)
+Sphere::Sphere(Vect c, double r, Vect col)
     : Object(col), center(c), radius(r) {}
 
 Sphere::Sphere(Vect c, double r, Material *mat)

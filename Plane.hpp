@@ -1,5 +1,4 @@
 #pragma once
-#include "Color.hpp"
 #include "Material.hpp"
 #include "Object.hpp"
 #include "Ray.hpp"
@@ -10,12 +9,11 @@ class Plane : public Object {
 
   Vect normal;
   double distance;
-  Color color;
 
 public:
   Plane();
 
-  Plane(Vect, double, Color);
+  Plane(Vect, double, Vect);
 
   Plane(Vect, double, Material*);
   // method function
@@ -43,9 +41,9 @@ public:
 };
 
 Plane::Plane()
-    : Object(Color(0.5, 0.5, 0.5, 0.0)), normal(Vect(1, 0, 0)), distance(0) {}
+    : Object(Vect(0.5, 0.5, 0.5)), normal(Vect(1, 0, 0)), distance(0) {}
 
-Plane::Plane(Vect n, double d, Color c) : Object(c), normal(n), distance(d) {}
+Plane::Plane(Vect n, double d, Vect c) : Object(c), normal(n), distance(d) {}
 
 Plane::Plane(Vect n, double d, Material *mat)
     : Object(mat), normal(n), distance(d) {}

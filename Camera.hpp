@@ -1,9 +1,12 @@
 #pragma once
 #include "Vect.hpp"
 #include "Ray.hpp"
+#include "math.h"
+#include "Utils.hpp"
 
 class Camera{
   Vect campos, camdir, camright, camdown;
+  double angle = degreesToRadians(75.0);
 public:
   Camera();
   Camera(Vect, Vect, Vect, Vect);
@@ -17,7 +20,29 @@ public:
     return Ray(campos, getRayDirection(width, height, x, y));
   }
 
+  Ray getOriginRay(double aspectRatio, double x, double y){
+    return Ray(campos, getOriginDirection(aspectRatio, x, y));
+  }
+
 private:
+
+  Vect getOriginDirection(double aspectRatio, double x, double y){
+    double maxLength = 2 * tan(angle/2);
+    bool wider = true;
+    if(aspectRatio < 1){
+      wider = false;
+    }
+    double dx = wider ? maxLength : maxLength * aspectRatio;
+    double dy = wider ? maxLength / aspectRatio : maxLength;
+    Vect starting = getCameraPosition() + getCameraDirection().normalize() +
+                    !(getCameraRight() * (dx / 2)) +
+      !(getCameraDown() * (dy / 2));
+    Vect dir = starting + (getCameraRight() * (x * dx)) +
+           (getCameraDown() * (dy - y * dy));
+    return (dir - campos).normalize();
+  }
+
+
   Vect getRayDirection(int width, int height, int x, int y){
     double xamnt, yamnt;
     double aspectratio = (double)width / (double)height;

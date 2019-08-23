@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Utils.hpp"
+#include <vector>
+using namespace std;
 
 class Color{
   double red, green, blue, special;
@@ -25,15 +27,40 @@ public:
     return Color(red*val, green*val, blue*val, special);
   }
 
+  Color average(Color other){
+    return Color((red+ other.red)/2, (blue+other.blue)/2, (green + other.green)/2, 0);
+  }
+
+
   Color multiply(Color c){
     return Color(red*c.red, green*c.green, blue*c.blue, special);
   }
+
   Color add(Color b){
     double redcol = red+b.red;
     double greencol = green+b.green;
     double bluecol = blue+b.blue;
     return Color(min(redcol, 1), min(greencol, 1), min(bluecol, 1), 0);
     // return Color(red+c.red, green*c.green, blue*c.blue, special);
+  }
+
+  Color mergeAdd(Color b, double ratio){
+    // r1 / r2 = ratio; c1 * r1 + c2 * r2 = 1;
+    // r1 = ratio * r2;
+    // c1 * ratio * r2 +  c2 * r2 = 1
+    // r2(c1 * ratio + c2 ) = 1
+    // r2 = 1 / (c1 * ratio + c2)
+    double redRatio = getRatio(red, b.red, ratio);
+    double greenRatio = getRatio(green, b.green, ratio);
+    double blueRatio = getRatio(blue, b.blue, ratio);
+    double rr = red * redRatio * ratio + b.red* redRatio;
+    double gg = green * greenRatio * ratio + b.green* greenRatio;
+    double bb = blue * blueRatio * ratio + b.blue* blueRatio;
+    return Color(rr, gg, bb, 0);
+  }
+
+  double getRatio(double v1, double v2, double ratio){
+    return 1 / (v1 * ratio + v2);
   }
 
   Color screen(Color b){
@@ -68,3 +95,4 @@ public:
 Color::Color(): red(0.5), green(0.5), blue(0.5){}
 
 Color::Color(double x,double y,double z,double i): red(x), green(y), blue(z) ,special(i){}
+

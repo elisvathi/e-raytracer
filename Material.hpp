@@ -1,10 +1,11 @@
 #pragma once
-#include "Color.hpp"
 #include "Map.hpp"
+#include "Ray.hpp"
 
 class Material {
-  Color color;
+  Vect color;
   double reflectionCoeficient = 1.0;
+  double ref_glossiness = 1.0;
   double refractionCoeficient = 0;
   double refractionIOR = 1;
   Map* diffuse = nullptr;
@@ -21,14 +22,18 @@ class Material {
   Map* opacity = nullptr;
 
 public:
+  int glossinessSubdivisions = 3;
   Material();
-  Material(Color);
+  Material(Vect);
 
-  Color get_color() {
+  Vect get_color() {
       return color;
   }
 
-  Color get_color(double u, double v) {
+  virtual bool scatter(){
+  }
+
+  Vect get_color(double u, double v) {
     if (diffuse == nullptr) {
       return color;
     }
@@ -43,9 +48,10 @@ public:
     diffuse = map;
   }
 
-  void set_color(Color color) {
+  void set_color(Vect color) {
     this->color = color;
   }
+
   double get_refractionCoeficient() {
     return refractionCoeficient;
   }
@@ -70,8 +76,16 @@ public:
     this->reflectionCoeficient = reflectionCoeficient;
   }
 
+  double getRefGlossiness(){
+    return ref_glossiness;
+  }
+
+  void setRefGlossiness(double value){
+    ref_glossiness = value;
+  }
+
 };
 Material::Material(){
-  color = Color(0,0,0,0);
+  color = Vect(0,0,0);
 }
-Material::Material(Color c) : color(c) {}
+Material::Material(Vect c) : color(c) {}

@@ -42,7 +42,7 @@ public:
 
   PointLight() : source(new Light()) {}
 
-  PointLight(Vect pos, Color col) : source(new Light(pos, col)) {}
+  PointLight(Vect pos, Vect col) : source(new Light(pos, col)) {}
 
   Vect getVector(int index, Vect point) {
     return (source->getLightPosition()) - point;
@@ -114,7 +114,7 @@ class ParalellLight : public CompoundLight {
 
   ParalellLight(Light *light):source(light) {}
 
-  ParalellLight(Vect pos, Color c):source(new Light(pos, c)) {}
+  ParalellLight(Vect pos, Vect c):source(new Light(pos, c)) {}
 
   double getTotalIntensity() {
     if (source != nullptr) {

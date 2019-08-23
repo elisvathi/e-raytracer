@@ -1,23 +1,22 @@
 #pragma once
 #include "Vect.hpp"
-#include "Color.hpp"
 
 class Light
 {
   Vect position;
-  Color color;
+  Vect color;
   double intensity;
 
 public:
   Light();
-  Light(Vect, Color);
+  Light(Vect, Vect);
   // method functions
   Vect getLightPosition() { return position; }
-  Color getLightColor() { return color; }
+  Vect getLightColor() { return color; }
   double getLightIntensity() { return intensity; }
   void setLightIntensity(double value) { intensity = value; }
 };
 
-Light::Light() : position(Vect(0, 0, 0)), color(Color(1, 1, 1, 0)), intensity(1) {}
+Light::Light() : position(Vect(0, 0, 0)), color(Vect(1, 1, 1)), intensity(1) {}
 
-Light::Light(Vect p, Color c) : position(p), color(c), intensity(1) {}
+Light::Light(Vect p, Vect c) : position(p), color(c), intensity(1) {}

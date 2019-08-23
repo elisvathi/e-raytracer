@@ -2,15 +2,25 @@
 #include "Light.hpp"
 #include "CompoundLight.hpp"
 #include "Object.hpp"
+#include "Ray.hpp"
 #include "Vect.hpp"
 #include <vector>
+#include "HitableList.hpp"
+#include "Hitable.hpp"
 
 using namespace std;
 
-class Scene {
+class Scene : public HitableList {
 public:
+  Scene():HitableList(){}
   vector<CompoundLight *> lights;
-  vector<Object *> objects;
+  vector<Hitable *> objects;
   void addObject(Object *object) { objects.push_back(object); }
   void addLight(CompoundLight *light) { lights.push_back(light); }
+protected:
+  const vector<Hitable*> getHitables(){
+    return objects;
+  }
+
 };
+

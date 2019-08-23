@@ -1,23 +1,23 @@
 #pragma once
-#include "Color.hpp"
+#include "Vect.hpp"
 #include "Texture.hpp"
 class Map {
-  Color color = Color(0,0,0,0);
+  Vect color = Vect(0,0,0);
   bool activeTexture = true;
   Texture* texture = nullptr;
 
 public:
-  Map():color(Color(0,0,0,0)){}
-  Map(Color c):color(c){}
+  Map():color(Vect(0,0,0)){}
+  Map(Vect c):color(c){}
 
-  Color getColor(double u, double v){
+  Vect getColor(double u, double v){
     if(isActiveTexture()) {
       return texture->getColor(u,v);
     }
     return color;
   }
 
-  void setColor(Color c){
+  void setColor(Vect c){
     color = c;
   }
 

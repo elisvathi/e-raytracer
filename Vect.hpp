@@ -1,5 +1,8 @@
 #pragma once
 #include "math.h"
+#include <random>
+#include <vector>
+using namespace std;
 class Vect{
   double x, y, z;
 public:
@@ -28,6 +31,30 @@ public:
   Vect operator!(){
     return *this * -1;
   }
+
+  Vect operator-(){
+    return *this * -1;
+  }
+
+  Vect rotateX(double angle) {
+    return Vect(x, y * cos(angle) - z * sin(angle),
+                y * sin(angle) + z * cos(angle));
+  }
+
+  Vect rotateY(double angle) {
+    return Vect(x * cos(angle) + z * sin(angle), y,
+                -1 * x * sin(angle) + z * cos(angle));
+  }
+
+  Vect rotateZ(double angle) {
+    return Vect(x * cos(angle) - y * sin(angle),
+                x * sin(angle) + y * cos(angle), z);
+  }
+
+  Vect rotateByNormal(Vect normal, double angle){
+    return Vect(0,0,0);
+  }
+
 
   double operator%(Vect other){
     return x * other.x + y * other.y + z * other.z;
@@ -71,3 +98,23 @@ public:
 Vect::Vect(){}
 
 Vect::Vect(double i, double j, double k): x(i), y(j), z(k) {}
+
+Vect averageColors(vector<Vect> colors){
+  double totalRed = 0;
+  double totalGreen = 0;
+  double totalBlue = 0;
+  int size = colors.size();
+  for(int i = 0; i < size; i++){
+    totalRed += colors[i].getVectX();
+    totalGreen += colors[i].getVectY();
+    totalBlue += colors[i].getVectZ();
+  }
+  return Vect(totalRed/size, totalBlue/size, totalGreen/size);
+}
+
+Vect randomUnit(){
+  return Vect(0, 1, 0)
+    .rotateX(M_PI * 2 * drand48())
+    .rotateY(M_PI * 2 * drand48())
+    .rotateZ(M_PI * 2 * drand48());
+}

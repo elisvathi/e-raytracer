@@ -1,5 +1,10 @@
 #pragma once
 #include <fstream>
+#include "math.h"
+#include "Vect.hpp"
+#include <vector>
+
+using namespace std;
 
 struct RGBType {
   double r;
@@ -7,8 +12,56 @@ struct RGBType {
   double b;
 };
 
+int minPositiveIndex(vector<double> values) {
+  if (values.size() == 0) {
+    return -1;
+  }
+  if (values.size() == 1) {
+    if (values[0] > 0) {
+      return 0;
+    }
+    return -1;
+  }
+  double selected_value = -1;
+  int selected_index = -1;
+  for (unsigned long i = 0; i < values.size(); i++) {
+    bool cond1 = selected_value > 0;
+    bool cond2 = values[i] > 0;
+    bool cond3 = values[i] < selected_value;
+    if ((cond1 && cond2 && cond3) || (!cond1 && cond2)) {
+      selected_value = values[i];
+      selected_index = i;
+    }
+  }
+  return selected_index;
+}
+
+class HitData {
+public:
+  int index;
+  double distance;
+  HitData(int i, double d) {
+    index = i;
+    distance = d;
+  }
+};
+
+struct HitRecord {
+  double t;
+  Vect p;
+  Vect normal;
+};
+
 double min(double a, double b){
   return !(b<a)?a:b;
+}
+
+double degreesToRadians(double degrees){
+  return (M_PI * degrees) / 180;
+}
+
+double radiansToDegrees(double radians) {
+  return (180 * radians) / M_PI;
 }
 
 double mapValue(double val, double a1, double b1, double a2, double b2) {

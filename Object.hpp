@@ -40,6 +40,7 @@ public:
       rec.t = distance;
       rec.material = get_material();
       Vect point = r.getPointAtLength(distance);
+      getUV(point, rec.u, rec.v);
       rec.normal = getNormalAt(point);
       rec.p = point;
       return true;
@@ -50,11 +51,11 @@ public:
     }
   }
 
-  virtual double findIntersection(Ray ray) { return 0; };
-  virtual Vect getNormalAt(Vect point) { return Vect(); }
-  virtual UV getUV(Vect point) { return UV(); };
+  virtual double findIntersection(Ray ray) = 0;
+  virtual Vect getNormalAt(Vect point) = 0 ;
+  virtual void getUV(Vect point, double& u, double& v) = 0;
 };
 
-Object::Object() : Hitable(), material(new Lambertian(Vect(0.5,0.5,0.5))) {}
-Object::Object(Vect c) :Hitable(), material(new Lambertian(c)){}
+Object::Object() : Hitable(), material(new Lambertian(new ConstantTexture(Vect(0.5,0.5,0.5)))) {}
+Object::Object(Vect c) :Hitable(), material(new Lambertian(new ConstantTexture(c))){}
 Object::Object(Material *m) :Hitable(),  material(m) {}

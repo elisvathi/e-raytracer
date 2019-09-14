@@ -1,8 +1,7 @@
 #pragma once
-
+#include <mutex>
+#include <vector>
 class ThreadPool {
-  int maxNumberOfThreads;
-  void init(){
-
+  ThreadPool(int count){
   }
 };

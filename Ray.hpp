@@ -4,14 +4,23 @@
 class Ray {
   Vect origin, direction;
   int bounces = 0;
+  double time = 0;
 public:
   Ray();
   Ray(Vect, Vect);
+  Ray(Vect, Vect, double);
   // method functions
   Vect getRayOrigin(){return origin;}
   Vect getRayDirection(){return direction;}
   Vect getPointAtLength(double length){
     return origin + (direction * length);
+  }
+  double getTime(){
+    return time;
+  }
+
+  void setTime(double value){
+    time = value;
   }
 
   int getBounces(){return bounces;}
@@ -50,5 +59,11 @@ Ray::Ray(){
 Ray::Ray(Vect o, Vect d) {
   origin = o;
   direction = d.normalize();
+}
+
+Ray::Ray(Vect o, Vect d, double ti) {
+  origin = o;
+  direction = d.normalize();
+  time = ti;
 }
 

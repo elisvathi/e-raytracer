@@ -13,8 +13,9 @@ public:
   Triangle(Vect,Vect,Vect);
   Triangle(Vect,Vect,Vect, Material*);
 
-  UV getUV(Vect point){
-    return UV(0,0);
+
+  virtual void getUV(Vect point, double& u, double& v) {
+
   }
 
   double findIntersection(Ray ray){

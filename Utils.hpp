@@ -35,8 +35,16 @@ int minPositiveIndex(vector<double> values) {
   return selected_index;
 }
 
-double min(double a, double b){
+double dmin(double a, double b){
   return !(b<a)?a:b;
+}
+
+double max(double a, double b){
+  return !(b>a)?a:b;
+}
+
+double dmax(double a, double b){
+  return !(b>a)?a:b;
 }
 
 double degreesToRadians(double degrees){

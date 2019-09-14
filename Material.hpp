@@ -2,21 +2,25 @@
 #include "Ray.hpp"
 #include "Hitable.hpp"
 #include "Vect.hpp"
+#include "Texture.hpp"
 
 class Material {
 public:
   virtual bool scatter(Ray& r_in, HitRecord& rec, Vect& attentuation, Ray& scattered) = 0;
+  virtual Vect emitted(float u, float v, Vect& p){return Vect(0,0,0);}
 };
 
 
 class Lambertian : public Material{
 public:
-  Vect albedo;
-  Lambertian(Vect a):albedo(a){}
+  Texture *albedo;
+  Lambertian(Texture* a):albedo(a){}
+  Lambertian(Vect a):albedo(new ConstantTexture(a)){}
   bool scatter(Ray& r_in, HitRecord& rec, Vect& attentuation, Ray& scattered) {
       Vect target = rec.p + rec.normal + randomUnit();
       scattered  = Ray(rec.p, target-rec.p);
-      attentuation = albedo;
+      scattered.setTime(r_in.getTime());
+      attentuation = albedo->value(rec.u, rec.v, rec.p);
       return true;
   }
 };
@@ -25,7 +29,7 @@ class Metal: public Material{
 public:
   Vect albedo;
   double fuzz;
-  Metal(Vect a, double f = 0.0):albedo(a){
+  Metal(Vect a, double f = 0.0): albedo(a){
     if(f < 1){
       fuzz = f;
     }else{
@@ -36,6 +40,7 @@ public:
   bool scatter(Ray& r_in, HitRecord& rec, Vect& attentuation, Ray& scattered) {
     Vect reflected = r_in.getRayDirection().reflect(rec.normal);
     scattered = Ray(rec.p, reflected + randomUnit() * fuzz);
+    scattered.setTime(r_in.getTime());
     attentuation = albedo;
     return scattered.getRayDirection() % rec.normal > 0;
   }
@@ -74,7 +79,35 @@ public:
     }else{
       scattered = Ray(rec.p, refracted);
     }
+    scattered.setTime(r_in.getTime());
     return true;
   }
 
+};
+
+class DiffuseLight : public Material{
+public:
+  DiffuseLight(Texture * a): emit(a){}
+
+  virtual bool scatter(Ray& r_in, HitRecord& rec, Vect& attentuation, Ray& scattered) {
+    return false;
+  }
+
+  virtual Vect emitted(float u, float v, Vect& p){
+    return emit->value(u, v, p);
+  }
+
+  Texture *emit;
+};
+
+
+class Isotropic: public Material{
+public:
+  Texture *albedo;
+  Isotropic(Texture * a): albedo(a){}
+  virtual bool scatter(Ray& r_in, HitRecord& rec, Vect& attentuation, Ray& scattered) {
+    scattered = Ray(rec.p, randomUnit());
+    attentuation = albedo->value(rec.u, rec.v, rec.p);
+    return true;
+  }
 };

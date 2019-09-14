@@ -4,12 +4,13 @@
 #include "Material.hpp"
 #include "Utils.hpp"
 #include "math.h"
+#include "BoundingBox.hpp"
 
 class Sphere : public Object
 {
+protected:
   Vect center;
   double radius;
-
 public:
   Sphere();
   Sphere(Vect, double, Vect);
@@ -19,20 +20,26 @@ public:
   Vect getSphereCenter() { return center; }
   double getSphereRadius() { return radius; }
 
+  virtual Vect getCenterAtTime(double time = 0){
+    return center;
+  }
+
+  virtual bool bounding_box(double t0, double t1, BoundingBox& box) {
+    box = BoundingBox(center - Vect(radius, radius, radius), center + Vect(radius, radius, radius));
+    return true;
+  };
+
   Vect getNormalAt(Vect point)
   {
     return (point - center).normalize();
   }
 
-  UV getUV(Vect point){
-    Vect rad = point - center;
-    double yangle = rad.angleBetween(Vect(0, 1, 0));
-    yangle = fmod(yangle, M_PI);
-    double xangle = rad.angleBetween(Vect(1, 0, 0));
-    xangle = fmod(xangle, 2 * M_PI);
-    yangle = mapValue(yangle, 0, M_PI, 0, 1);
-    xangle = mapValue(xangle, 0, 2 * M_PI, 0, 1);
-    return UV( xangle * 16, yangle * 16 );
+  void getUV(Vect point, double& u, double& v){
+    Vect p = (point - center) / radius;
+    double phi = atan2(p.z(), p.x());
+    double theta = asin(p.y());
+    u = 1 - (phi + M_PI) / (2*M_PI);
+    v = (theta + M_PI/2) / M_PI;
   }
 
   double findIntersection(Ray ray)
@@ -47,9 +54,10 @@ public:
     double ray_direction_y = ray_direction.getVectY();
     double ray_direction_z = ray_direction.getVectZ();
 
-    double sphere_center_x = center.getVectX();
-    double sphere_center_y = center.getVectY();
-    double sphere_center_z = center.getVectZ();
+    Vect centerAtTime = getCenterAtTime(ray.getTime());
+    double sphere_center_x = centerAtTime.getVectX();
+    double sphere_center_y = centerAtTime.getVectY();
+    double sphere_center_z = centerAtTime.getVectZ();
 
     double a = 1; // normalized
 
@@ -64,20 +72,15 @@ public:
     static double tolerance = 0.00001;
     if (discriminant > 0)
     {
-      // ray intersects the sphere
-      // first root
       double root_1 = ((-1 * b) - sqrt(discriminant)) / (2 * a) - tolerance;
       if (root_1 > 0)
       {
-        // the first root is the smallest positive root;
         return root_1;
       }
-      // return the second root
       return ((-1 * b) + sqrt(discriminant)) / (2 * a) - tolerance;
     }
     else
     {
-      // ray doesn't intersect the sphere
       return -1;
     }
   }
@@ -90,4 +93,3 @@ Sphere::Sphere(Vect c, double r, Vect col)
 
 Sphere::Sphere(Vect c, double r, Material *mat)
     : Object(mat), center(c), radius(r) {}
-

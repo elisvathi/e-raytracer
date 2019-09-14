@@ -24,10 +24,6 @@ public:
 
   Vect getNormalAt(Vect point) { return normal; }
 
-  UV getUV(Vect point){
-    return UV(fmod(point.getVectX(), 1), fmod(point.getVectZ(),1));
-  }
-
   double findIntersection(Ray ray) {
     Vect ray_dir = ray.getRayDirection();
     double a = ray_dir % normal;
@@ -38,6 +34,8 @@ public:
     double b = normal % (ray.getRayOrigin() + !(normal * distance));
     return -1 * b / a;
   }
+  virtual void getUV(Vect point, double& u, double& v) {};
+
 };
 
 Plane::Plane()

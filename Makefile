@@ -8,8 +8,12 @@ build: $(OBJ)
 	g++ $(OBJ) -o raytracer.out $(THREAD)
 	rm -f $(OBJ)
 
-run:
+render:
 	./raytracer.out
+
+run: render show
+
+show:
 	eog scene.bmp
 
 debug:

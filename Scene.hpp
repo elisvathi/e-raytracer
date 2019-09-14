@@ -13,18 +13,18 @@ using namespace std;
 class Scene : public HitableList {
 public:
   Scene():HitableList(){}
-  vector<CompoundLight *> lights;
-  vector<Hitable *> objects;
-  void addObject(Object *object) { objects.push_back(object); }
-  void addLight(CompoundLight *light) { lights.push_back(light); }
-  void addObjects(Hitable **objs, int count){
-    for(int i = 0; i < count; i++){
-      objects.push_back(objs[i]);
-    }
+  // vector<Hitable *> objects;
+  Hitable ** hitables;
+  int count;
+  void addObjects(Hitable **objs, int cnt){
+    hitables = objs;
+    count = cnt;
+    buildTree(0,1);
   }
 protected:
-  const vector<Hitable*> getHitables(){
-    return objects;
+  Hitable**  getHitables(int& n){
+    n = count;
+    return hitables;
   }
 
 };

@@ -1,4 +1,4 @@
-#include "Solver.hpp"
+#include "src/Solver.hpp"
 
 const int SCREEN_WIDTH = 500;
 const int SCREEN_HEIGHT = 500;
